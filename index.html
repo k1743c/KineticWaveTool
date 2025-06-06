@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="manifest" href="manifest.json">
+    <title>Kinetic Wave Tool</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s;
+        }
+        .container {
+            text-align: center;
+        }
+        #animatedText {
+            font-size: 2em;
+            padding: 10px;
+            animation: wave 2s infinite;
+            user-select: none;
+        }
+        @keyframes wave {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+        #backgroundPattern {
+            background-size: 50px 50px;
+            transition: background-color 0.3s, background-image 0.3s;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kinetic Wave Tool</h1>
+        <form id="waveForm">
+            <label for="textInput">Enter Text:</label><br>
+            <input type="text" id="textInput" placeholder="Type here..."><br><br>
+
+            <label for="textColor">Text Color:</label><br>
+            <input type="color" id="textColor" value="#000000"><br><br>
+
+            <label for="bgColor">Background Color:</label><br>
+            <input type="color" id="bgColor" value="#ffffff"><br><br>
+
+            <label for="bgPattern">Background Pattern:</label><br>
+            <select id="bgPattern">
+                <option value="none">None</option>
+                <option value="diagonal">Diagonal Stripes</option>
+                <option value="dots">Dots</option>
+            </select><br><br>
+
+            <button type="button" onclick="generateRandomPattern()">Generate Random Pattern</button>
+        </form>
+        <div id="backgroundPattern">
+            <div id="animatedText"></div>
+        </div>
+    </div>
+
+    <script>
+        const textInput = document.getElementById('textInput');
+        const textColor = document.getElementById('textColor');
+        const bgColor = document.getElementById('bgColor');
+        const bgPattern = document.getElementById('bgPattern');
+        const animatedText = document.getElementById('animatedText');
+        const backgroundPattern = document.getElementById('backgroundPattern');
+
+        textInput.addEventListener('input', updateDisplay);
+        textColor.addEventListener('input', updateDisplay);
+        bgColor.addEventListener('input', updateDisplay);
+        bgPattern.addEventListener('change', updateDisplay);
+
+        function updateDisplay() {
+            animatedText.textContent = textInput.value || 'Kinetic Wave';
+            animatedText.style.color = textColor.value;
+            backgroundPattern.style.backgroundColor = bgColor.value;
+
+            const pattern = bgPattern.value;
+            if (pattern === 'diagonal') {
+                backgroundPattern.style.backgroundImage = 'linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 75%), linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 75%)';
+                backgroundPattern.style.backgroundSize = '20px 20px';
+            } else if (pattern === 'dots') {
+                backgroundPattern.style.backgroundImage = 'radial-gradient(circle, rgba(0,0,0,0.2) 20%, transparent 20%)';
+                backgroundPattern.style.backgroundSize = '20px 20px';
+            } else {
+                backgroundPattern.style.backgroundImage = 'none';
+            }
+        }
+
+        function generateRandomPattern() {
+            const patterns = ['diagonal', 'dots'];
+            const randomPattern = patterns[Math.floor(Math.random() * patterns.length)];
+            bgPattern.value = randomPattern;
+            updateDisplay();
+        }
+
+        // Ініціалізація
+        updateDisplay();
+
+        // Реєстрація сервіс-воркера
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log('Service Worker registered'))
+                .catch(err => console.error('Service Worker registration failed:', err));
+        }
+    </script>
+</body>
+</html>
